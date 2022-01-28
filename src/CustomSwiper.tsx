@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { ListRenderItemInfo, FlatList, Dimensions, StyleSheet, View } from 'react-native';
+import { FlatList, Dimensions, StyleSheet, View } from 'react-native';
 import * as PropTypes from 'prop-types';
 import Pagination from './Pagination';
 
