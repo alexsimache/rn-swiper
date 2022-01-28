@@ -8,7 +8,7 @@ type defaultPropTypes = {
   data: Record<string, string>[],
 }
 
-const Pagination = ({ data, index, dotColor = 'gray', activeDotColor = 'lightblue' }:defaultPropTypes) => {
+const Pagination = ({ data, index, dotColor = 'gray', activeDotColor = 'lightblue' }: defaultPropTypes) => {
   const styles = StyleSheet.create({
     pagination: {
       width: '100%',
@@ -22,22 +22,22 @@ const Pagination = ({ data, index, dotColor = 'gray', activeDotColor = 'lightblu
       borderRadius: 4,
       marginHorizontal: 2,
     },
-    paginationDotActive: { backgroundColor: activeDotColor },
-    paginationDotInactive: { backgroundColor: dotColor },
+    dotActive: { backgroundColor: activeDotColor },
+    dotInactive: { backgroundColor: dotColor },
   });
   return (
-    <View style={styles.pagination} pointerEvents="none">
-      {data.map((item, i) => {
+    <View style={ styles.pagination } pointerEvents='none'>
+      { data.map((item, i) => {
         return (
           <View
-            key={item.id.toString()}
-            style={[
+            key={ item.id.toString() }
+            style={ [
               styles.paginationDot,
-              index === i ? styles.paginationDotActive : styles.paginationDotInactive,
-            ]}
+              index === i ? styles.dotActive : styles.dotInactive,
+            ] }
           />
         );
-      })}
+      }) }
     </View>
   );
 };

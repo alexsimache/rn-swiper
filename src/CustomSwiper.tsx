@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { FlatList, Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, FlatList, StyleSheet, View } from 'react-native';
 import Pagination from './Pagination';
 
 type defaultPropTypes = {
@@ -11,7 +11,14 @@ type defaultPropTypes = {
   renderSlide: ({ item }: { item: any; }) => JSX.Element,
 }
 
-const CustomSwiper = ({ height = 100, dotColor = 'gray', activeDotColor = 'lightblue', showsPagination = true, data = [], renderSlide }:defaultPropTypes) => {
+const CustomSwiper = ({
+                        height = 100,
+                        dotColor = 'gray',
+                        activeDotColor = 'lightblue',
+                        showsPagination = true,
+                        data = [],
+                        renderSlide,
+                      }: defaultPropTypes) => {
   const { width: windowWidth } = Dimensions.get('window');
 
   const styles = StyleSheet.create({
@@ -35,60 +42,54 @@ const CustomSwiper = ({ height = 100, dotColor = 'gray', activeDotColor = 'light
 
     const distance = Math.abs(roundIndex - index);
 
-    // Prevent one pixel triggering setIndex in the middle
-    // of the transition. With this we have to scroll a bit
-    // more to trigger the index change.
-    const isNoMansLand = distance > 0.4;
+    const preventPixelTriggering = distance > 0.4;
 
-    if (roundIndex !== indexRef.current && !isNoMansLand) {
+    if (roundIndex !== indexRef.current && !preventPixelTriggering) {
       setIndex(roundIndex);
     }
   }, []);
 
-  const flatListOptimizationProps = {
-    initialNumToRender: 0,
-    maxToRenderPerBatch: 1,
-    removeClippedSubviews: true,
-    scrollEventThrottle: 16,
-    windowSize: 2,
-    keyExtractor: useCallback((s: { id: number; }) => String(s.id), []),
-    getItemLayout: useCallback(
-      (_: any, eq: number) => ({
-        index: eq,
-        length: windowWidth,
-        offset: eq * windowWidth,
-      }),
-      [],
-    ),
-  };
-
-  const renderItem = ({ item } : any) => {
-    return <View style={[styles.slide]}>{renderSlide({ item })}</View>;
+  const renderItem = ({ item }: any) => {
+    return <View style={ [styles.slide] }>{ renderSlide({ item }) }</View>;
   };
 
   const renderFooter = () => {
     if (!showsPagination || data.length <= 1) return null;
     return (
-      <View style={{ marginTop: 0 }}>
-        <Pagination index={index} data={data} dotColor={dotColor} activeDotColor={activeDotColor} />
+      <View style={ { marginTop: 0 } }>
+        <Pagination index={ index } data={ data } dotColor={ dotColor } activeDotColor={ activeDotColor } />
       </View>
     );
   };
-
+  const keyExtractor = useCallback((s: { id: number; }) => String(s.id), []);
+  const getItemLayout = useCallback(
+    (_: any, eq: number) => ({
+      index: eq,
+      length: windowWidth,
+      offset: eq * windowWidth,
+    }),
+    [],
+  );
   return (
-    <View style={{ height: height + 10 }}>
+    <View style={ { height: height + 10 } }>
       <FlatList
-        data={data}
-        style={styles.carousel}
-        renderItem={renderItem}
+        data={ data }
+        style={ styles.carousel }
+        renderItem={ renderItem }
         pagingEnabled
         horizontal
-        showsHorizontalScrollIndicator={false}
-        bounces={false}
-        onScroll={onScroll}
-        {...flatListOptimizationProps}
+        showsHorizontalScrollIndicator={ false }
+        bounces={ false }
+        onScroll={ onScroll }
+        initialNumToRender={ 0 }
+        maxToRenderPerBatch={ 1 }
+        removeClippedSubviews
+        scrollEventThrottle={ 16 }
+        windowSize={ 2 }
+        keyExtractor={ keyExtractor }
+        getItemLayout={ getItemLayout }
       />
-      {renderFooter()}
+      { renderFooter() }
     </View>
   );
 };
