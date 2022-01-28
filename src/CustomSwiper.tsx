@@ -3,7 +3,16 @@ import { FlatList, Dimensions, StyleSheet, View } from 'react-native';
 import * as PropTypes from 'prop-types';
 import Pagination from './Pagination';
 
-const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data, renderSlide }) => {
+type defaultPropTypes = {
+  height: number,
+  dotColor: string,
+  activeDotColor: string,
+  showsPagination: boolean,
+  data: [],
+  renderSlide: ({}) => {},
+}
+
+const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data, renderSlide }:defaultPropTypes) => {
   const { width: windowWidth } = Dimensions.get('window');
 
   const styles = StyleSheet.create({
@@ -19,7 +28,7 @@ const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data,
   const [index, setIndex] = useState(0);
   const indexRef = useRef(index);
   indexRef.current = index;
-  const onScroll = useCallback((event) => {
+  const onScroll = useCallback((event: { nativeEvent: { layoutMeasurement: { width: any; }; contentOffset: { x: number; }; }; }) => {
     const slideSize = event.nativeEvent.layoutMeasurement.width;
     // eslint-disable-next-line no-shadow
     const index = event.nativeEvent.contentOffset.x / slideSize;
@@ -43,9 +52,9 @@ const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data,
     removeClippedSubviews: true,
     scrollEventThrottle: 16,
     windowSize: 2,
-    keyExtractor: useCallback((s) => String(s.id), []),
+    keyExtractor: useCallback((s: { id: number; }) => String(s.id), []),
     getItemLayout: useCallback(
-      (_, eq) => ({
+      (_: any, eq: number) => ({
         index: eq,
         length: windowWidth,
         offset: eq * windowWidth,
@@ -54,12 +63,15 @@ const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data,
     ),
   };
 
-  const renderItem = ({ item }) => {
+  type itemType = {
+    item: Record<string, string>
+  };
+  const renderItem = ({ item } : itemType) => {
     return <View style={[styles.slide]}>{renderSlide({ item })}</View>;
   };
 
   const renderFooter = () => {
-    if (!showsPagination || data.length === 1) return null;
+    if (!showsPagination || data.length <= 1) return null;
     return (
       <View style={{ marginTop: 0 }}>
         <Pagination index={index} data={data} dotColor={dotColor} activeDotColor={activeDotColor} />
