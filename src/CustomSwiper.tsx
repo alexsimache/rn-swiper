@@ -64,8 +64,9 @@ const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data,
   };
 
   type itemType = {
-    item: Record<string, string>
+    item: FlatList<{ id: number; }> | JSX.Element<{ id: number; }>
   };
+
   const renderItem = ({ item } : itemType) => {
     return <View style={[styles.slide]}>{renderSlide({ item })}</View>;
   };
