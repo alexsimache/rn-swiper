@@ -1,6 +1,5 @@
 import { StyleSheet, View } from 'react-native';
 import React, { memo } from 'react';
-import * as PropTypes from 'prop-types';
 
 type defaultPropTypes = {
   index: number,
@@ -9,7 +8,7 @@ type defaultPropTypes = {
   data: Record<string, string>[],
 }
 
-const Pagination = ({ data, index, dotColor, activeDotColor }:defaultPropTypes) => {
+const Pagination = ({ data, index, dotColor = 'gray', activeDotColor = 'lightblue' }:defaultPropTypes) => {
   const styles = StyleSheet.create({
     pagination: {
       width: '100%',
@@ -41,18 +40,6 @@ const Pagination = ({ data, index, dotColor, activeDotColor }:defaultPropTypes) 
       })}
     </View>
   );
-};
-
-Pagination.defaultProps = {
-  dotColor: 'gray',
-  activeDotColor: 'lightblue',
-};
-
-Pagination.propTypes = {
-  index: PropTypes.number.isRequired,
-  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  dotColor: PropTypes.string,
-  activeDotColor: PropTypes.string,
 };
 
 export default memo(Pagination);

@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { FlatList, Dimensions, StyleSheet, View } from 'react-native';
-import * as PropTypes from 'prop-types';
 import Pagination from './Pagination';
 
 type defaultPropTypes = {
@@ -9,10 +8,10 @@ type defaultPropTypes = {
   activeDotColor: string,
   showsPagination: boolean,
   data: [],
-  renderSlide: ({}) => {},
+  renderSlide: ({ item }: { item: any; }) => JSX.Element,
 }
 
-const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data, renderSlide }:defaultPropTypes) => {
+const CustomSwiper = ({ height = 100, dotColor = 'gray', activeDotColor = 'lightblue', showsPagination = true, data = [], renderSlide = () => {} }:defaultPropTypes) => {
   const { width: windowWidth } = Dimensions.get('window');
 
   const styles = StyleSheet.create({
@@ -92,23 +91,6 @@ const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data,
       {renderFooter()}
     </View>
   );
-};
-CustomSwiper.defaultProps = {
-  height: 100,
-  dotColor: 'gray',
-  activeDotColor: 'lightblue',
-  showsPagination: true,
-  data: [],
-  renderSlide: () => {},
-};
-
-CustomSwiper.propTypes = {
-  height: PropTypes.number,
-  dotColor: PropTypes.string,
-  activeDotColor: PropTypes.string,
-  showsPagination: PropTypes.bool,
-  data: PropTypes.arrayOf(PropTypes.shape({})),
-  renderSlide: PropTypes.func,
 };
 
 export default CustomSwiper;
