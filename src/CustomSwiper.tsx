@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { FlatList, Dimensions, StyleSheet, View } from 'react-native';
+import { ListRenderItem, FlatList, Dimensions, StyleSheet, View } from 'react-native';
 import * as PropTypes from 'prop-types';
 import Pagination from './Pagination';
 
@@ -64,7 +64,7 @@ const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data,
   };
 
   type itemType = {
-    item: FlatList<{ id: number; }> | JSX.Element
+    item: FlatList<{ id: number; }> | ListRenderItem<{ id: number; }>
   };
 
   const renderItem = ({ item } : itemType) => {
