@@ -63,11 +63,7 @@ const CustomSwiper = ({ height, dotColor, activeDotColor, showsPagination, data,
     ),
   };
 
-  type itemType = {
-    item: ListRenderItemInfo<{ id: number; }>
-  };
-
-  const renderItem = ({ item } : itemType) => {
+  const renderItem = ({ item } : ListRenderItemInfo) => {
     return <View style={[styles.slide]}>{renderSlide({ item })}</View>;
   };
 
