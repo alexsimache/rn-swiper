@@ -11,7 +11,7 @@ type defaultPropTypes = {
   renderSlide: ({ item }: { item: any; }) => JSX.Element,
 }
 
-const CustomSwiper = ({ height = 100, dotColor = 'gray', activeDotColor = 'lightblue', showsPagination = true, data = [], renderSlide = () => {} }:defaultPropTypes) => {
+const CustomSwiper = ({ height = 100, dotColor = 'gray', activeDotColor = 'lightblue', showsPagination = true, data = [], renderSlide }:defaultPropTypes) => {
   const { width: windowWidth } = Dimensions.get('window');
 
   const styles = StyleSheet.create({
