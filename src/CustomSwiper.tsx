@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Animated, Dimensions, FlatList, Platform, StyleSheet, View } from 'react-native';
-import Pagination from './Pagination';
+// import Pagination from './Pagination';
 
 type defaultPropTypes = {
   height: number,
@@ -9,15 +9,19 @@ type defaultPropTypes = {
   showsPagination: boolean,
   data: [],
   renderSlide: ({ item }: { item: any; }) => JSX.Element,
+  ListHeaderComponent: JSX.ELement,
+  ListFooterComponent: JSX.ELement,
 }
 
 const CustomSwiper = ({
                         height = 100,
-                        dotColor = 'gray',
-                        activeDotColor = 'lightblue',
-                        showsPagination = true,
+                        // dotColor = 'gray',
+                        // activeDotColor = 'lightblue',
+                        // showsPagination = true,
                         data = [],
                         renderSlide,
+                        ListHeaderComponent,
+                        ListFooterComponent,
                       }: defaultPropTypes) => {
   const { width: windowWidth } = Dimensions.get('window');
   const [scrollViewWidth, setScrollViewWidth] = React.useState(0);
@@ -89,14 +93,14 @@ const CustomSwiper = ({
     </Animated.View>
   );
 
-  const renderFooter = () => {
-    if (!showsPagination || data.length <= 1) return null;
-    return (
-      <View style={ { marginTop: 0 } }>
-        <Pagination index={ index } data={ data } dotColor={ dotColor } activeDotColor={ activeDotColor } />
-      </View>
-    );
-  };
+  // const renderFooter = () => {
+  //   if (!showsPagination || data.length <= 1) return null;
+  //   return (
+  //     <View style={ { marginTop: 0 } }>
+  //       <Pagination index={ index } data={ data } dotColor={ dotColor } activeDotColor={ activeDotColor } />
+  //     </View>
+  //   );
+  // };
   const keyExtractor = useCallback((s: { id: number; }) => String(s.id), []);
   const getItemLayout = useCallback(
     (_: any, eq: number) => ({
@@ -109,6 +113,8 @@ const CustomSwiper = ({
   return (
     <View style={ { height: height + 10 } }>
       <FlatList
+        ListHeaderComponent={ListHeaderComponent}
+        ListFooterComponent={ListFooterComponent}
         data={ data }
         style={ styles.carousel }
         renderItem={ renderItem }
@@ -136,7 +142,7 @@ const CustomSwiper = ({
           right: halfBoxDistance,
         }}
         contentOffset={{ x: halfBoxDistance * -1, y: 0 }}
-        onLayout={(e) => {
+        onLayout={(e: any) => {
           setScrollViewWidth(e.nativeEvent.layout.width);
         }}
         onScroll={Animated.event(
@@ -160,7 +166,6 @@ const CustomSwiper = ({
           },
         )}
       />
-      { renderFooter() }
     </View>
   );
 };
