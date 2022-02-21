@@ -9,8 +9,8 @@ type defaultPropTypes = {
   showsPagination: boolean,
   data: [],
   renderSlide: ({ item }: { item: any; }) => JSX.Element,
-  ListHeaderComponent: React.ComponentType<any> | React.CElement<any>,
-  ListFooterComponent: React.ComponentType<any> | React.CElement<any>,
+  ListHeaderComponent: any,
+  ListFooterComponent: any,
 }
 
 const CustomSwiper = ({
