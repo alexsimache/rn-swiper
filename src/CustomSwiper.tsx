@@ -20,8 +20,8 @@ const CustomSwiper = ({
                         // showsPagination = true,
                         data = [],
                         renderSlide,
-                        ListHeaderComponent,
-                        ListFooterComponent,
+                        ListHeaderComponent = {},
+                        ListFooterComponent = {},
                       }: defaultPropTypes) => {
   const { width: windowWidth } = Dimensions.get('window');
   const [scrollViewWidth, setScrollViewWidth] = React.useState(0);
