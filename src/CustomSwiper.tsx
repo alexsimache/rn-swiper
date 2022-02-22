@@ -15,13 +15,12 @@ const EMPTY_ITEM_LENGTH = (width - ITEM_LENGTH) / 2;
 const CURRENT_ITEM_TRANSLATE_Y = 0;
 
 interface CustomSwiperProps {
-  // @ts-ignore
-  data: CustomSwiperItem[];
+  data: [];
   height: number,
   renderSlide: ({ item }: { item: any; }) => JSX.Element,
 }
 
-const CustomSwiper: FC<CustomSwiperProps> = ({data, height, renderSlide}) => {
+const CustomSwiper: FC<CustomSwiperProps> = ({data, height, renderSlide}: any) => {
   const styles = StyleSheet.create({
     container: {},
     flatListContent: {
@@ -37,10 +36,7 @@ const CustomSwiper: FC<CustomSwiperProps> = ({data, height, renderSlide}) => {
   });
 
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [dataWithPlaceholders, setDataWithPlaceholders] = useState<
-    // @ts-ignore
-    CustomSwiperItem[]
-    >([]);
+  const [dataWithPlaceholders, setDataWithPlaceholders] = useState<[]>([]);
   const currentIndex = useRef<number>(0);
   const flatListRef = useRef<FlatList<any>>(null);
 
