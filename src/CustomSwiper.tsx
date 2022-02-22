@@ -49,7 +49,6 @@ const CustomSwiper: FC<CustomSwiperProps> = ({data, height, renderSlide}) => {
     currentIndex.current = 1;
   }, [data]);
 
-  // `data` perameter is not used. Therefore, it is annotated with the `any` type to merely satisfy the linter.
   const getItemLayout = (_data: any, index: number) => ({
     length: ITEM_LENGTH,
     offset: ITEM_LENGTH * (index - 1),
