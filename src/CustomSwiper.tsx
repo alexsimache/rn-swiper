@@ -1,170 +1,116 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { Animated, Dimensions, FlatList, Platform, StyleSheet, View } from 'react-native';
-// import Pagination from './Pagination';
+import React, {FC, useEffect, useRef, useState} from 'react';
+import {
+  Animated,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  View,
+} from 'react-native';
 
-type defaultPropTypes = {
+const {width} = Dimensions.get('window');
+
+const SPACING = 5;
+const ITEM_LENGTH = width * 0.8;
+const EMPTY_ITEM_LENGTH = (width - ITEM_LENGTH) / 2;
+const CURRENT_ITEM_TRANSLATE_Y = 0;
+
+interface CustomSwiperProps {
+  // @ts-ignore
+  data: CustomSwiperItem[];
   height: number,
-  dotColor: string,
-  activeDotColor: string,
-  showsPagination: boolean,
-  data: [],
   renderSlide: ({ item }: { item: any; }) => JSX.Element,
-  ListHeaderComponent: any,
-  ListFooterComponent: any,
 }
 
-const CustomSwiper = ({
-                        height = 100,
-                        // dotColor = 'gray',
-                        // activeDotColor = 'lightblue',
-                        // showsPagination = true,
-                        data = [],
-                        renderSlide,
-                        ListHeaderComponent = {},
-                        ListFooterComponent = {},
-                      }: defaultPropTypes) => {
-  const { width: windowWidth } = Dimensions.get('window');
-  const [scrollViewWidth, setScrollViewWidth] = React.useState(0);
-  const boxWidth = scrollViewWidth * 0.9;
-  const boxDistance = scrollViewWidth - boxWidth;
-  const halfBoxDistance = boxDistance / 2;
-  const pan = React.useRef(new Animated.ValueXY()).current;
-
+const CustomSwiper: FC<CustomSwiperProps> = ({data, height, renderSlide}) => {
   const styles = StyleSheet.create({
-    carousel: { flex: 1 },
-    slide: {
+    container: {},
+    flatListContent: {
       height,
-      width: windowWidth,
-      justifyContent: 'center',
       alignItems: 'center',
-      textAlign: 'center',
+      marginBottom: CURRENT_ITEM_TRANSLATE_Y,
+    },
+    item: {},
+    itemContent: {
+      marginHorizontal: SPACING * 2,
+      alignItems: 'center',
     },
   });
-  const [index, setIndex] = useState(0);
-  const indexRef = useRef(index);
-  indexRef.current = index;
-  // onScroll={Animated.event(
-  //   [{ nativeEvent: { contentOffset: { x: pan.x } } }],
-  //   {
-  //     useNativeDriver: false,
-  //   },
-  // )}
-  // const onScroll = useCallback((event: { nativeEvent: { layoutMeasurement: { width: any; }; contentOffset: { x: number; }; }; }) => {
-  //   const slideSize = event.nativeEvent.layoutMeasurement.width;
-  //   // eslint-disable-next-line no-shadow
-  //   const index = event.nativeEvent.contentOffset.x / slideSize;
-  //   const roundIndex = Math.round(index);
-  //
-  //   const distance = Math.abs(roundIndex - index);
-  //
-  //   const preventPixelTriggering = distance > 0.4;
-  //
-  //   if (roundIndex !== indexRef.current && !preventPixelTriggering) {
-  //     setIndex(roundIndex);
-  //   }
-  //   Animated.event(
-  //     [{ nativeEvent: { contentOffset: { x: pan.x } } }],
-  //     {
-  //       useNativeDriver: false,
-  //     },
-  //   )
-  // }, []);
 
-  const renderItem = ({ item, index }: any) => (
-    <Animated.View
-      style={{
-        transform: [
-          {
-            scale: pan.x.interpolate({
-              inputRange: [
-                (index - 1) * boxWidth - halfBoxDistance - 150,
-                index * boxWidth - halfBoxDistance,
-                (index + 1) * boxWidth - halfBoxDistance + 150, // adjust positioning
-              ],
-              outputRange: [0.90, 1, 0.90], // scale down when out of scope
-              extrapolate: 'clamp',
-            }),
-          },
-        ],
-      }}>
-      <View style={{ height: '100%', width: boxWidth }}>
-        { renderSlide({ item }) }
-      </View>
-    </Animated.View>
-  );
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const [dataWithPlaceholders, setDataWithPlaceholders] = useState<
+    // @ts-ignore
+    CustomSwiperItem[]
+    >([]);
+  const currentIndex = useRef<number>(0);
+  const flatListRef = useRef<FlatList<any>>(null);
 
-  // const renderFooter = () => {
-  //   if (!showsPagination || data.length <= 1) return null;
-  //   return (
-  //     <View style={ { marginTop: 0 } }>
-  //       <Pagination index={ index } data={ data } dotColor={ dotColor } activeDotColor={ activeDotColor } />
-  //     </View>
-  //   );
-  // };
-  const keyExtractor = useCallback((s: { id: number; }) => String(s.id), []);
-  const getItemLayout = useCallback(
-    (_: any, eq: number) => ({
-      index: eq,
-      length: windowWidth,
-      offset: eq * windowWidth,
-    }),
-    [],
-  );
+  useEffect(() => {
+    setDataWithPlaceholders([{id: -1}, ...data, {id: data.length}]);
+    currentIndex.current = 1;
+  }, [data]);
+
+  // `data` perameter is not used. Therefore, it is annotated with the `any` type to merely satisfy the linter.
+  const getItemLayout = (_data: any, index: number) => ({
+    length: ITEM_LENGTH,
+    offset: ITEM_LENGTH * (index - 1),
+    index,
+  });
+
   return (
-    <View style={ { height: height + 10 } }>
+    <View style={styles.container}>
       <FlatList
-        ListHeaderComponent={ListHeaderComponent}
-        ListFooterComponent={ListFooterComponent}
-        data={ data }
-        style={ styles.carousel }
-        renderItem={ renderItem }
-        pagingEnabled
+        ref={flatListRef}
+        data={dataWithPlaceholders}
+        renderItem={({item, index}: any) => {
+          if (!item.code) {
+            return <View style={{width: EMPTY_ITEM_LENGTH}} />;
+          }
+
+          const inputRange = [
+            (index - 2) * ITEM_LENGTH,
+            (index - 1) * ITEM_LENGTH,
+            index * ITEM_LENGTH,
+          ];
+
+          const translateY = scrollX.interpolate({
+            inputRange,
+            outputRange: [
+              CURRENT_ITEM_TRANSLATE_Y * 2,
+              CURRENT_ITEM_TRANSLATE_Y,
+              CURRENT_ITEM_TRANSLATE_Y * 2,
+            ],
+            extrapolate: 'clamp',
+          });
+
+          return (
+            <View style={{width: ITEM_LENGTH}}>
+              <Animated.View
+                style={[
+                  {
+                    transform: [{translateY}],
+                  },
+                  styles.itemContent,
+                ]}>
+                { renderSlide({ item }) }
+              </Animated.View>
+            </View>
+          );
+        }}
+        getItemLayout={getItemLayout}
         horizontal
-        showsHorizontalScrollIndicator={ false }
-        bounces={ false }
-        // onScroll={ onScroll }
-        initialNumToRender={ 0 }
-        maxToRenderPerBatch={ 2 }
-        removeClippedSubviews
-        windowSize={ 2 }
-        keyExtractor={ keyExtractor }
-        getItemLayout={ getItemLayout }
-        contentContainerStyle={{ paddingVertical: 20, paddingHorizontal: Platform.OS === 'ios' ? 0 : 20 }}
-        contentInsetAdjustmentBehavior="never"
-        snapToAlignment="center"
-        decelerationRate="fast"
-        automaticallyAdjustContentInsets={false}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={1}
-        snapToInterval={boxWidth}
-        contentInset={{
-          left: halfBoxDistance,
-          right: halfBoxDistance,
-        }}
-        contentOffset={{ x: halfBoxDistance * -1, y: 0 }}
-        onLayout={(e: any) => {
-          setScrollViewWidth(e.nativeEvent.layout.width);
-        }}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item: { id: any; }) => item.id}
+        bounces={false}
+        decelerationRate={0}
+        renderToHardwareTextureAndroid
+        contentContainerStyle={styles.flatListContent}
+        snapToInterval={ITEM_LENGTH}
+        snapToAlignment="start"
         onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: pan.x } } }],
-          {
-            useNativeDriver: false,
-            listener: (event: any) => {
-              const slideSize = event.nativeEvent.layoutMeasurement.width;
-              // eslint-disable-next-line no-shadow
-              const index = event.nativeEvent.contentOffset.x / slideSize;
-              const roundIndex = Math.round(index);
-
-              const distance = Math.abs(roundIndex - index);
-
-              const preventPixelTriggering = distance > 0.4;
-
-              if (roundIndex !== indexRef.current && !preventPixelTriggering) {
-                setIndex(roundIndex);
-              }
-            },
-          },
+          [{nativeEvent: {contentOffset: {x: scrollX}}}],
+          {useNativeDriver: false},
         )}
+        scrollEventThrottle={16}
       />
     </View>
   );
