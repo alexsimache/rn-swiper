@@ -14,13 +14,17 @@ const ITEM_LENGTH = width * 0.8;
 const EMPTY_ITEM_LENGTH = (width - ITEM_LENGTH) / 2;
 const CURRENT_ITEM_TRANSLATE_Y = 0;
 
-interface CustomSwiperProps {
-  data: any;
+type defaultPropTypes = {
   height: number,
+  data: [],
   renderSlide: ({ item }: { item: any; }) => JSX.Element,
 }
 
-const CustomSwiper: FC<CustomSwiperProps> = ({data, height, renderSlide}: any) => {
+const CustomSwiper= ({
+                       height = 100,
+                       data = [],
+                       renderSlide,
+                     }: defaultPropTypes) => {
   const styles = StyleSheet.create({
     container: {},
     flatListContent: {
