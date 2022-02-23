@@ -1,13 +1,7 @@
-import React, {FC, useEffect, useRef, useState} from 'react';
-import {
-  Animated,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Dimensions, FlatList, StyleSheet, View } from 'react-native';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const SPACING = 5;
 const ITEM_LENGTH = width * 0.8;
@@ -15,16 +9,16 @@ const EMPTY_ITEM_LENGTH = (width - ITEM_LENGTH) / 2;
 const CURRENT_ITEM_TRANSLATE_Y = 0;
 
 type defaultPropTypes = {
-  height: number,
-  data: [],
-  renderSlide: ({ item }: { item: any; }) => JSX.Element,
-}
+  height: number;
+  data: [];
+  renderSlide: ({ item }: { item: any }) => JSX.Element;
+};
 
-const CustomSwiper= ({
-                       height = 100,
-                       data = [],
-                       renderSlide,
-                     }: defaultPropTypes) => {
+const CustomSwiper = ({
+  height = 100,
+  data = [],
+  renderSlide,
+}: defaultPropTypes) => {
   const styles = StyleSheet.create({
     container: {},
     flatListContent: {
@@ -40,12 +34,12 @@ const CustomSwiper= ({
   });
 
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [dataWithPlaceholders, setDataWithPlaceholders] = useState([]);
+  const [dataWithPlaceholders, setDataWithPlaceholders] = useState([{ id: 0 }]);
   const currentIndex = useRef<number>(0);
   const flatListRef = useRef<FlatList<any>>(null);
 
   useEffect(() => {
-    setDataWithPlaceholders([{id: -1}, ...data, {id: data.length}]);
+    setDataWithPlaceholders([{ id: -1 }, ...data, { id: data.length }]);
     currentIndex.current = 1;
   }, [data]);
 
@@ -60,9 +54,9 @@ const CustomSwiper= ({
       <FlatList
         ref={flatListRef}
         data={dataWithPlaceholders}
-        renderItem={({item, index}: any) => {
+        renderItem={({ item, index }: any) => {
           if (!item.code) {
-            return <View style={{width: EMPTY_ITEM_LENGTH}} />;
+            return <View style={{ width: EMPTY_ITEM_LENGTH }} />;
           }
 
           const inputRange = [
@@ -82,15 +76,16 @@ const CustomSwiper= ({
           });
 
           return (
-            <View style={{width: ITEM_LENGTH}}>
+            <View style={{ width: ITEM_LENGTH }}>
               <Animated.View
                 style={[
                   {
-                    transform: [{translateY}],
+                    transform: [{ translateY }],
                   },
                   styles.itemContent,
-                ]}>
-                { renderSlide({ item }) }
+                ]}
+              >
+                {renderSlide({ item })}
               </Animated.View>
             </View>
           );
@@ -98,7 +93,7 @@ const CustomSwiper= ({
         getItemLayout={getItemLayout}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item: { id: any; }) => item.id}
+        keyExtractor={(item: { id: any }) => item.id}
         bounces={false}
         decelerationRate={0}
         renderToHardwareTextureAndroid
@@ -106,8 +101,8 @@ const CustomSwiper= ({
         snapToInterval={ITEM_LENGTH}
         snapToAlignment="start"
         onScroll={Animated.event(
-          [{nativeEvent: {contentOffset: {x: scrollX}}}],
-          {useNativeDriver: false},
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false }
         )}
         scrollEventThrottle={16}
       />
