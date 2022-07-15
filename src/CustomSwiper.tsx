@@ -3,9 +3,9 @@ import { Animated, Dimensions, FlatList, StyleSheet, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-const SPACING = 5;
-const ITEM_LENGTH = width * 0.8;
-const EMPTY_ITEM_LENGTH = (width - ITEM_LENGTH) / 2;
+const SPACING = 3;
+const ITEM_LENGTH = width * 0.9;
+const EMPTY_ITEM_LENGTH = (width - ITEM_LENGTH) / 2.5;
 const CURRENT_ITEM_TRANSLATE_Y = 0;
 
 type defaultPropTypes = {
